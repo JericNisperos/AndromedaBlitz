@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+
+<script src="lib/p5.play.js"></script>
+<script src="lib/p5.dom.js"></script>
+<script src="lib/p5.js"></script>
+
+<head>
+<title>Welcome to Jeric's Lab!</title>
+</head>
+<body>
+<script type="text/javascript">
+var fireworks = [];
+var gravity;
+var button;
+var ctx;
+function setup() { 
+  ctx = createCanvas(windowWidth, windowHeight);
+  frameRate(70);
+  gravity = createVector(0, 0.2);
+  colorMode(HSB);
+  stroke(255);
+  strokeWeight(4);
+  
+  
+}
+function draw() {
+ 
+  colorMode(RGB);
+  noStroke();
+  fill(51);
+  background(0, 0, 0, 50);
+//without trails
+  fill(0);
+  rect(600, 0, 1200, 900);
+
+  //if (random(1) < 0.2) {
+  //  fireworks.push(new Firework());
+  //}
+  fill(60);
+  rect(1100, 20, 230, 250);
+  //text codes here
+textStyle(BOLD);
+textSize(20);
+fill(50);
+text("WITH TRAILMARKS", 200, 600);
+text("WITHOUT TRAILMARKS", 830, 600);
+textcolor = color('#429ef4');
+textSize(15);
+fill(textcolor);
+text("FIREWORK SIMULATOR", 1130, 50);
+textSize(10);
+text("           THIS IS JUST  A   SIMULATION    OF LAUNCHING A FIREWORK IN THE SKY. I'VE CREATED TWO TYPES OF FIREWORKS. THE     FIREWORK    WITH   A   TRAILMARK   AND FIREWORK WITHOUT TRAILMARK.", 1110, 70, 230, 200);
+text("            JUST DRAG  DOWN  YOUR  MOUSE  OVER  THE  CANVAS  AND  WATCH  THESE FIREWORKS LAUNCH  AND  BLAST  UP  IN  THE AIR!", 1110, 150, 230, 200);
+text("MAIL ME AT:", 1110, 250, 230, 200);
+fill(255);
+text("jericrnisperos@gmail.com", 1180, 250, 230, 200);
+  for (var i = fireworks.length - 1; i >= 0; i--) {
+    fireworks[i].update();
+    fireworks[i].show();
+    if (fireworks[i].done()) {
+      fireworks.splice(i, 1);
+    }
+  }
+
+
+}
+function trailmark() {
+        colorMode(RGB);
+        background(51);
+}
+function mouseDragged() {
+        fireworks.push(new Firework());
+        
+}
+function Particle(x,y, hue, firework) {
+  this.pos = createVector(x,y);
+  this.firework = firework;
+  this.lifespan = random(255);
+  this.hue = hue;
+  if (this.firework) {
+  this.vel = createVector(0, random(-14, -10)); }
+  else {
+    this.vel = p5.Vector.random2D();
+    this.vel.mult(random(1, 6));
+  }
+  this.acc = createVector(0,0);
+  this.applyForce = function(force) {
+    this.acc.add(force);
+  }
+  this.update = function() {
+    if (!this.firework) {
+      this.vel.mult(0.9);
+      this.lifespan -= 4;
+    }
+    this.vel.add(this.acc);
+    this.pos.add(this.vel);
+    this.acc.mult(0);
+  }
+
+  this.done = function() {
+    if (this.lifespan < 0) {
+      return true;
+                        background(51);
+    } else {
+      return false;
+    }
+  }
+        
+  this.show = function() {
+    if (!this.firework) {
+      colorMode(HSB);
+      strokeWeight(random(1,5));
+      stroke(hue, 150, 100, this.lifespan);
+    } else {
+      strokeWeight(random(1,5));
+      stroke(hue, 150, 100);
+    }
+    point(this.pos.x, this.pos.y);
+  }
+ }
+    function Firework() {
+      this.hue = random(255);
+      this.firework = new Particle(mouseX, mouseY, this.hue, true);
+      this.exploded = false;
+      this.particles = [];
+
+      this.done = function() {
+        if (this.exploded && this.particles.length == 0) {
+          return true;
+                        background(51);
+        } else {
+          return false;
+        }
+      }
+
+
+
+      this.update = function() {
+        if (!this.exploded) {
+        this.firework.applyForce(gravity);
+      this.firework.update();
+      if (this.firework.vel.y >= 0) {
+        this.exploded = true;
+
+        this.explode();
+      }
+    }
+      for (var i = this.particles.length - 1; i >= 0; i--) {
+        this.particles[i].applyForce(gravity);
+        this.particles[i].update();
+        if (this.particles[i].done()) {
+          this.particles.splice(i, 1);
+        }
+      }
+      
+  }
+  this.explode = function() {
+    for (var i = 0; i < random(250); i++) {
+      var p = new Particle(this.firework.pos.x, this.firework.pos.y, this.hue, false);
+      this.particles.push(p);
+    }
+  }
+
+      this.show = function() {
+        if (!this.exploded) {
+        this.firework.show();
+      }
+      for (var i = 0; i < this.particles.length; i++) {
+        this.particles[i].show();
+      }
+      }
+    }
+
+</script>
+</body>
